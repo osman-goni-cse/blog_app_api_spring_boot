@@ -20,7 +20,7 @@ public class UserDto {
     @Email(message = "Email Address is not valid")
     @NotBlank(message = "Must have to provide Email")
     private String email;
-    @NotBlank
+    @NotBlank(message = "Must not be empty")
     private String password;
 
     @NotBlank
