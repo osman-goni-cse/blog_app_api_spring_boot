@@ -48,13 +48,36 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostDto updatePost(PostDto postDto, Integer postId) {
-        return null;
+    public PostDto updatePost(PostDto postDto, Integer postId, Integer userId, Integer categoryId) {
+        Post post = this.postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException(
+                "Post does not exist", "PostID: ", postId
+        ));
+        User user = this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException(
+                "User does not exist.", "UserID: ", userId
+        ));
+        Category category = this.categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException(
+                "Category Does not exist", "Category ID: ", categoryId
+        ));
+
+        post.setUser(user);
+        post.setCategory(category);
+        post.setTitle(postDto.getTitle());
+        post.setContent(postDto.getContent());
+        post.setImageName(postDto.getImageName());
+        post.setAddedDate(new Date());
+
+        Post updatedPost = this.postRepo.save(post);
+
+        return this.modelMapper.map(updatedPost, PostDto.class);
     }
 
     @Override
     public PostDto getPostById(Integer postId) {
-        return null;
+        Post post = this.postRepo.findById(postId).orElseThrow(() -> new
+                ResourceNotFoundException("Post Does Not exist", " Post ID: ", postId));
+
+
+        return this.modelMapper.map(post, PostDto.class);
     }
 
     @Override
@@ -74,17 +97,35 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> getPostByCategory(Integer categoryId) {
-        return null;
+    public List<PostDto> getPostsByCategory(Integer categoryId) {
+        Category category = this.categoryRepo.findById(categoryId).orElseThrow(() ->
+                new ResourceNotFoundException("Category Not Found With ", "CategoryID: ", categoryId));
+
+        List<Post> posts = this.postRepo.findByCategory(category);
+
+        List<PostDto> postDtos = posts.stream().map(post -> this.modelMapper.map(
+                post, PostDto.class
+        )).collect(Collectors.toList());
+
+
+        return postDtos;
     }
 
     @Override
-    public List<Post> getPostsByUser(Integer userId) {
-        return null;
+    public List<PostDto> getPostsByUser(Integer userId) {
+        User user = this.userRepo.findById(userId).orElseThrow(() ->
+                new ResourceNotFoundException("User Does Not Exist.", "UserID: ", userId));
+
+        List<Post> posts = this.postRepo.findByUser(user);
+
+        List<PostDto> postDtos = posts.stream().map(post ->
+                this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
+
+        return postDtos;
     }
 
     @Override
-    public List<Post> searchPosts(String keyword) {
+    public List<PostDto> searchPosts(String keyword) {
         return null;
     }
 }

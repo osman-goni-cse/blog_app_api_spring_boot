@@ -22,6 +22,24 @@ public class PostController {
         return ResponseEntity.ok(posts);
     }
 
+    @GetMapping("/posts/{postId}")
+    public ResponseEntity<PostDto> getPostById(@PathVariable Integer postId) {
+        PostDto post = this.postService.getPostById(postId);
+        return ResponseEntity.ok(post);
+    }
+
+    @GetMapping("/category/{categoryId}/posts")
+    public ResponseEntity<List<PostDto>> getPostsByCategory(@PathVariable Integer categoryId) {
+        List<PostDto> posts = this.postService.getPostsByCategory(categoryId);
+        return ResponseEntity.ok(posts);
+    }
+
+    @GetMapping("/user/{userId}/posts")
+    public ResponseEntity<List<PostDto>> getPostsByUser(@PathVariable Integer userId) {
+        List<PostDto> posts = this.postService.getPostsByUser(userId);
+        return ResponseEntity.ok(posts);
+    }
+
     @PostMapping("/user/{userId}/category/{categoryId}/posts")
     public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto,
                                               @PathVariable Integer userId,
@@ -29,6 +47,15 @@ public class PostController {
         PostDto createPostDto = this.postService.createPost(postDto, userId, categoryId);
 
         return new ResponseEntity<PostDto>(createPostDto, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/user/{userId}/category/{categoryId}/posts/{postId}")
+    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto,
+                                              @PathVariable Integer userId,
+                                              @PathVariable Integer categoryId,
+                                              @PathVariable Integer postId) {
+        PostDto updatePostDto = this.postService.updatePost(postDto, postId, userId, categoryId);
+        return new ResponseEntity<PostDto>(updatePostDto, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/posts/{postId}")
