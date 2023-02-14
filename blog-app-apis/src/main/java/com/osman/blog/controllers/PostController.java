@@ -2,6 +2,7 @@ package com.osman.blog.controllers;
 
 import com.osman.blog.entities.Post;
 import com.osman.blog.payloads.PostDto;
+import com.osman.blog.payloads.PostResponse;
 import com.osman.blog.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,8 +18,13 @@ public class PostController {
     private PostService postService;
 
     @GetMapping("/posts")
-    public ResponseEntity<List<PostDto>> getAllPosts() {
-        List<PostDto> posts = this.postService.getAllPost();
+    public ResponseEntity<PostResponse> getAllPosts(
+            @RequestParam (value = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
+            @RequestParam (value = "pageSize", defaultValue = "5", required = false) Integer pageSize,
+            @RequestParam (value = "sortBy", defaultValue = "postId", required = false) String sortBy) {
+
+        PostResponse posts = this.postService.getAllPost(pageNumber, pageSize, sortBy);
+
         return ResponseEntity.ok(posts);
     }
 
@@ -49,12 +55,10 @@ public class PostController {
         return new ResponseEntity<PostDto>(createPostDto, HttpStatus.CREATED);
     }
 
-    @PutMapping("/user/{userId}/category/{categoryId}/posts/{postId}")
+    @PutMapping("/posts/{postId}")
     public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto,
-                                              @PathVariable Integer userId,
-                                              @PathVariable Integer categoryId,
                                               @PathVariable Integer postId) {
-        PostDto updatePostDto = this.postService.updatePost(postDto, postId, userId, categoryId);
+        PostDto updatePostDto = this.postService.updatePost(postDto, postId);
         return new ResponseEntity<PostDto>(updatePostDto, HttpStatus.CREATED);
     }
 
